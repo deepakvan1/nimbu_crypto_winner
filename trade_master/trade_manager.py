@@ -73,18 +73,23 @@ def get_qty_precision(client, symbol):
 
 def get_volume_and_multiplier(winloss_data):
     #[{'type': 'losses', 'count': 2}, {'type': 'wins', 'count': 3}, {'type': 'losses', 'count': 1}, {'type': 'wins', 'count': 1}]
-    MAX_LOSS_COUNTER = 2
+    MAX_LOSS_COUNTER = 12
+    THRESHOLD_CROSSED = False
     pending_losses=0
     for list_element in winloss_data:
         if list_element['type']=='losses':
             pending_losses+=list_element['count']
+            if pending_losses>=MAX_LOSS_COUNTER:
+                THRESHOLD_CROSSED = True
         if list_element['type']=='wins':
             if pending_losses<MAX_LOSS_COUNTER:
                 pending_losses=0
+                THRESHOLD_CROSSED = False
                 continue
             for i in range(list_element['count']):
                 if pending_losses<MAX_LOSS_COUNTER:
                     pending_losses=0
+                    THRESHOLD_CROSSED = False
                     break
                 pending_losses-=1
 
@@ -93,7 +98,7 @@ def get_volume_and_multiplier(winloss_data):
     rwt = 0 # recovery winning trades
     if pending_losses >= (MAX_LOSS_MULTIPLIER-1):
         rwt = pending_losses - (MAX_LOSS_MULTIPLIER-2) # after 12 losses, recovery trades start
-    elif pending_losses > 0:
+    elif pending_losses > 0 and winloss_data[-1]['type'] != 'wins':
         rwt = 1
 
     current_multiplier = 1
@@ -103,7 +108,9 @@ def get_volume_and_multiplier(winloss_data):
     # Adjust multiplier based on pending losses
     if pending_losses>MAX_LOSS_MULTIPLIER:
         current_multiplier = 21
-    elif pending_losses > 0 and pending_losses <= MAX_LOSS_MULTIPLIER:
+    elif THRESHOLD_CROSSED :
+        current_multiplier = 21
+    elif pending_losses > 0 and pending_losses <= MAX_LOSS_MULTIPLIER and rwt>0:
         current_multiplier = capital_loss_multiplier.get(pending_losses, 1)
 
     # if pending_losses >= (MAX_LOSS_MULTIPLIER-1):
