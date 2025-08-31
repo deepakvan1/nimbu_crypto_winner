@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Details - Order Management</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --dark-bg: #0f172a;
+            --sidebar-bg: #1e293b;
+            --card-bg: #ffffff;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+            --buy-color: #10b981;
+            --sell-color: #ef4444;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            padding: 2rem 1rem;
+        }
+
+        .page-header {
+            background: var(--card-bg);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .page-header h1 {
+            color: var(--dark-bg);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-header p {
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        .order-form-card {
+            background: var(--card-bg);
+            border-radius: 1rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .order-form-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .order-form-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .order-form-body {
+            padding: 2rem;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: var(--dark-bg);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-control, .form-select {
+            border: 2px solid var(--border-color);
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.25);
+        }
+
+        .order-type-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .order-type-btn {
+            flex: 1;
+            padding: 1rem;
+            border: 2px solid var(--border-color);
+            background: white;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .order-type-btn:hover {
+            border-color: var(--primary-color);
+            background: rgba(37, 99, 235, 0.05);
+        }
+
+        .order-type-btn.active {
+            border-color: var(--primary-color);
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .order-type-btn.buy.active {
+            background: var(--buy-color);
+            border-color: var(--buy-color);
+        }
+
+        .order-type-btn.sell.active {
+            background: var(--sell-color);
+            border-color: var(--sell-color);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+            margin-top: 1.5rem;
+        }
+
+        .submit-btn.buy {
+            background: var(--buy-color);
+            color: white;
+        }
+
+        .submit-btn.buy:hover {
+            background: #0ea271;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .submit-btn.sell {
+            background: var(--sell-color);
+            color: white;
+        }
+
+        .submit-btn.sell:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+
+        .alert {
+            border-radius: 0.5rem;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .alert-success {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success-color);
+        }
+
+        .alert-danger {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger-color);
+        }
+
+        .response-card {
+            background: var(--card-bg);
+            border-radius: 1rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .response-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .response-content {
+            background: #f8fafc;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .input-group-text {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            font-weight: 600;
+        }
+
+        .price-input-group {
+            position: relative;
+        }
+
+        .price-input-group .form-control {
+            padding-left: 3rem;
+        }
+
+        .price-input-group .input-group-text {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            z-index: 4;
+            border-radius: 0.5rem 0 0 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem 0.5rem;
+            }
+
+            .order-form-body {
+                padding: 1.5rem;
+            }
+
+            .order-type-buttons {
+                flex-direction: column;
+            }
+
+            .page-header {
+                padding: 1.5rem;
+            }
+
+            .page-header h1 {
+                font-size: 1.5rem;
+            }
+        }
+
+        .loading-spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="page-header">
+            <h1><i class="bi bi-person-circle me-2"></i>Account Details</h1>
+            <p>Execute market orders for your trading pairs</p>
+        </div>
+
+        {% if success is not None %}
+            {% if success %}
+                <div class="alert alert-success">
+                    <i class="bi bi-check-circle-fill"></i>
+                    <strong>Success!</strong> Order executed successfully.
+                </div>
+                <div class="alert alert-success">
+                    <i class="bi bi-check-circle-fill"></i>
+                    <strong>Error!</strong> {{ response }}
+                </div>
+            {% else %}
+                <div class="alert alert-danger">
+                    <i class="bi bi-x-circle-fill"></i>
+                    <strong>Error!</strong> {{ response|default:"Failed to execute order." }}
+                </div>
+            {% endif %}
+        {% endif %}
+
+        <div class="order-form-card">
+            <div class="order-form-header">
+                <h2><i class="bi bi-arrow-left-right me-2"></i>Place Order</h2>
+            </div>
+            <div class="order-form-body">
+                <form method="POST" action="{% url 'account-api' %}" id="orderForm">
+                    {% csrf_token %}
+                    
+                    <div class="mb-4">
+                        <label for="coin_pair_name" class="form-label">
+                            <i class="bi bi-currency-exchange me-1"></i>Coin Pair
+                        </label>
+                        <input type="text" 
+                               class="form-control" 
+                               id="coin_pair_name" 
+                               name="coin_pair_name" 
+                               placeholder="e.g., BTCUSDT" 
+                               required>
+                        <small class="text-muted">Enter the trading pair symbol</small>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">
+                            <i class="bi bi-arrow-down-up me-1"></i>Order Side
+                        </label>
+                        <div class="order-type-buttons">
+                            <button type="button" 
+                                    class="order-type-btn buy" 
+                                    data-side="buy">
+                                <i class="bi bi-arrow-up-circle me-2"></i>BUY
+                            </button>
+                            <button type="button" 
+                                    class="order-type-btn sell" 
+                                    data-side="sell">
+                                <i class="bi bi-arrow-down-circle me-2"></i>SELL
+                            </button>
+                        </div>
+                        <input type="hidden" id="order_side" name="order_side" required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="order_type" class="form-label">
+                            <i class="bi bi-list-ul me-1"></i>Order Type
+                        </label>
+                        <select class="form-select" id="order_type" name="order_type" required>
+                            <option value="">Select order type</option>
+                            <option value="TAKE_PROFIT_MARKET">Take Profit Market</option>
+                            <option value="STOP_MARKET">Stop Market</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="order_price" class="form-label">
+                            <i class="bi bi-tag me-1"></i>Stop/Take Profit Price
+                        </label>
+                        <div class="price-input-group">
+                            <span class="input-group-text">$</span>
+                            <input type="number" 
+                                   class="form-control" 
+                                   id="order_price" 
+                                   name="order_price" 
+                                   step="0.00000001" 
+                                   placeholder="0.00000000" 
+                                   required>
+                        </div>
+                        <small class="text-muted">Enter the price at which the order should trigger</small>
+                    </div>
+
+                    <button type="submit" class="submit-btn" id="submitBtn">
+                        <span id="btnText">Submit Order</span>
+                        <div class="loading-spinner" id="loadingSpinner"></div>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        {% if response and success %}
+            <div class="response-card">
+                <div class="response-header">
+                    <i class="bi bi-receipt text-primary"></i>
+                    <h4 class="mb-0">Order Response</h4>
+                </div>
+                <div class="response-content">
+                    <pre>{{ response|pprint }}</pre>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Handle order side selection
+            $('.order-type-btn').click(function() {
+                $('.order-type-btn').removeClass('active');
+                $(this).addClass('active');
+                
+                const side = $(this).data('side');
+                $('#order_side').val(side);
+                
+                // Update submit button color based on side
+                $('#submitBtn').removeClass('buy sell').addClass(side);
+                
+                // Update button text
+                const btnText = side === 'buy' ? 'Submit Buy Order' : 'Submit Sell Order';
+                $('#btnText').text(btnText);
+            });
+
+            // Form validation
+            $('#orderForm').on('submit', function(e) {
+                const orderSide = $('#order_side').val();
+                if (!orderSide) {
+                    e.preventDefault();
+                    alert('Please select an order side (Buy or Sell)');
+                    return false;
+                }
+
+                // Show loading state
+                $('#submitBtn').prop('disabled', true);
+                $('#btnText').text('Processing...');
+                $('#loadingSpinner').css('display', 'inline-block');
+            });
+
+            // Auto-dismiss alerts after 5 seconds
+            setTimeout(function() {
+                $('.alert').fadeOut('slow');
+            }, 5000);
+
+            // Add animation to response card
+            $('.response-card').hide().fadeIn(500);
+        });
+    </script>
+</body>
+</html>
