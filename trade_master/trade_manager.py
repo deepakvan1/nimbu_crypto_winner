@@ -97,19 +97,25 @@ def get_volume_and_multiplier(winloss_data):
     MAX_LOSS_MULTIPLIER = 12 # after 12 consecutive losses, do not increase volume
     rwt = 0 # recovery winning trades
     if pending_losses >= (MAX_LOSS_MULTIPLIER-1):
-        rwt = pending_losses - (MAX_LOSS_MULTIPLIER-2) # after 12 losses, recovery trades start
+        rwt = pending_losses - (MAX_LOSS_MULTIPLIER-2) # after 11 losses, recovery trades start
     elif pending_losses > 0 and winloss_data[-1]['type'] != 'wins':
         rwt = 1
 
     current_multiplier = 1
     
-    capital_loss_multiplier ={1:1,2:1,3:1,4:2,5:2,6:3,7:4,8:6,9:8,10:11,12:21}
+    #capital_loss_multiplier ={1:1,2:1,3:1,4:2,5:2,6:3,7:4,8:6,9:8,10:11,12:21}
     
+    capital_loss_multiplier = {
+                                0: 1, 1: 1, 2: 1, 3: 2, 4: 2, 5: 3, 6: 4,
+                                7: 5, 8: 7, 9: 9, 10: 12, 11: 16, 12: 22,
+                                13: 29, 14: 39, 15: 52
+                                }
+
     # Adjust multiplier based on pending losses
     if pending_losses>MAX_LOSS_MULTIPLIER:
-        current_multiplier = 21
+        current_multiplier = 22
     elif THRESHOLD_CROSSED :
-        current_multiplier = 21
+        current_multiplier = 22
     elif pending_losses > 0 and pending_losses <= MAX_LOSS_MULTIPLIER and rwt>0:
         current_multiplier = capital_loss_multiplier.get(pending_losses, 1)
 
