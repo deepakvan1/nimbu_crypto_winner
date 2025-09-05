@@ -107,15 +107,15 @@ def get_volume_and_multiplier(winloss_data):
     
     capital_loss_multiplier = {
                                 0: 1, 1: 1, 2: 1, 3: 2, 4: 2, 5: 3, 6: 4,
-                                7: 5, 8: 7, 9: 9, 10: 12, 11: 16, 12: 22,
-                                13: 29, 14: 39, 15: 52
+                                7: 6, 8: 8, 9: 11, 10: 15, 11: 21, 12: 29,
+                                13: 40, 14: 55, 15: 76
                                 }
 
     # Adjust multiplier based on pending losses
     if pending_losses>MAX_LOSS_MULTIPLIER:
-        current_multiplier = 22
+        current_multiplier = 29
     elif THRESHOLD_CROSSED :
-        current_multiplier = 22
+        current_multiplier = 29
     elif pending_losses > 0 and pending_losses <= MAX_LOSS_MULTIPLIER and rwt>0:
         current_multiplier = capital_loss_multiplier.get(pending_losses, 1)
 
