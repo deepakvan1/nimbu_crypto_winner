@@ -73,7 +73,7 @@ def get_qty_precision(client, symbol):
 
 def get_volume_and_multiplier(winloss_data):
     #[{'type': 'losses', 'count': 2}, {'type': 'wins', 'count': 3}, {'type': 'losses', 'count': 1}, {'type': 'wins', 'count': 1}]
-    MAX_LOSS_COUNTER = 12
+    MAX_LOSS_COUNTER = 5
     THRESHOLD_CROSSED = False
     pending_losses=0
     for list_element in winloss_data:
@@ -94,28 +94,34 @@ def get_volume_and_multiplier(winloss_data):
                 pending_losses-=1
 
     base_capital = 5.1 # initial investment 
-    MAX_LOSS_MULTIPLIER = 12 # after 12 consecutive losses, do not increase volume
+    MAX_LOSS_MULTIPLIER = 5 # after 5 consecutive losses, do not increase volume
     rwt = 0 # recovery winning trades
     if pending_losses >= (MAX_LOSS_MULTIPLIER-1):
-        rwt = pending_losses - (MAX_LOSS_MULTIPLIER-2) # after 11 losses, recovery trades start
+        rwt = pending_losses - (MAX_LOSS_MULTIPLIER-2) # after 4 losses, recovery trades start
     elif pending_losses > 0 and winloss_data[-1]['type'] != 'wins':
         rwt = 1
 
     current_multiplier = 1
     
     #capital_loss_multiplier ={1:1,2:1,3:1,4:2,5:2,6:3,7:4,8:6,9:8,10:11,12:21}
-    
+    #1:3 risk to reward ratio
+    # capital_loss_multiplier = {
+    #                             0: 1, 1: 1, 2: 1, 3: 2, 4: 2, 5: 3, 6: 4,
+    #                             7: 6, 8: 8, 9: 11, 10: 15, 11: 21, 12: 29,
+    #                             13: 40, 14: 55, 15: 76
+    #                             }
+    #1:1 risk to reward ratio
     capital_loss_multiplier = {
-                                0: 1, 1: 1, 2: 1, 3: 2, 4: 2, 5: 3, 6: 4,
-                                7: 6, 8: 8, 9: 11, 10: 15, 11: 21, 12: 29,
-                                13: 40, 14: 55, 15: 76
+                                0: 1, 1: 2, 2: 4, 3: 8, 4: 16, 5: 32, 6: 64,
+                                7: 128, 8: 256, 9: 512, 10: 1024, 11: 2048,
+                                12: 4096, 13: 8192, 14: 16384, 15: 32768
                                 }
 
     # Adjust multiplier based on pending losses
     if pending_losses>MAX_LOSS_MULTIPLIER:
-        current_multiplier = 29
+        current_multiplier = 32
     elif THRESHOLD_CROSSED :
-        current_multiplier = 29
+        current_multiplier = 32
     elif pending_losses > 0 and pending_losses <= MAX_LOSS_MULTIPLIER and rwt>0:
         current_multiplier = capital_loss_multiplier.get(pending_losses, 1)
 

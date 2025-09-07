@@ -7,7 +7,7 @@ from django.conf import settings
 
 # Strategy parameters
 RISK_PERCENT = 0.01  # 1% risk per trade
-REWARD_RATIO = 3.0  # Risk:Reward ratio
+REWARD_RATIO = 1.0  # Risk:Reward ratio
 EMA_FAST = 9
 EMA_SLOW = 21
 VOLUME_PERIOD = 20
